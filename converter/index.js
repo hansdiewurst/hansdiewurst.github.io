@@ -16,6 +16,16 @@ const downloadBin = function (data, name) {
     a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
 };
+const error = function (text) {
+    const err = new Error(text);
+    const elem = document.createElement("div");
+    elem.innerHTML = err;
+    elem.style.color = "#f00";
+    document.body.appendChild(elem);
+    setTimeout(() => elem.remove(), 5000);
+    throw err;
+};
+
 const input = document.createElement("input");
 input.type = "file";
 input.addEventListener("input", () => {
@@ -32,8 +42,8 @@ input.addEventListener("input", () => {
             break;
         case "schem": handler = minecraftToBloxd;
             break;
-        case "schematic": throw new Error(".schematic files aren't supported.\nYou may use https://beta.cubical.xyz/ or https://puregero.github.io/SchemToSchematic/ to convert to .schem.")
-        default: throw new Error("File type not recognized. Only valid are .schem and .bloxdschem");
+        case "schematic": error(".schematic files aren't supported.\nYou may use https://beta.cubical.xyz/ or https://puregero.github.io/SchemToSchematic/ to convert to .schem.")
+        default: error("File type not recognized. Only valid are .schem and .bloxdschem");
     }
 
     fileReader.readAsArrayBuffer(file);
