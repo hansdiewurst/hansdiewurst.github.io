@@ -106,24 +106,6 @@ export const mcJSONToBloxd = function (mcJson, name = "New Schematic") {
         chunks: []
     };
 
-    //simplify json
-    const json = {
-        size: [
-            mcJson.Width.value,
-            mcJson.Height.value,
-            mcJson.Length.value
-        ],
-    };
-    if(mcJson.hasOwnProperty("Blocks")) {
-        const blocks = mcJson.Blocks.value;
-        json.palette = blocks.Palette.value;
-        json.blocks = blocks.Data.value;
-    } else {
-        json.palette = mcJson.Palette.value;
-        json.blocks = mcJson.BlockData.value;
-    }
-    mcJson = json;
-
     const decodedBlocks = [];
     let decodeI = 0;
     function decodeLEB128() {
