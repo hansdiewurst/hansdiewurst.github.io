@@ -107,15 +107,22 @@ export const mcJSONToBloxd = function (mcJson, name = "New Schematic") {
     };
 
     //simplify json
-    mcJson = {
+    const json = {
         size: [
             mcJson.Width.value,
             mcJson.Height.value,
             mcJson.Length.value
         ],
-        palette: mcJson.Palette.value,
-        blocks: mcJson.BlockData.value
     };
+    if(mcJson.hasOwnProperty("Blocks")) {
+        const blocks = mcJson.Blocks.value;
+        json.palette = blocks.Palette.value;
+        json.blocks = blocks.Data.value;
+    } else {
+        json.palette = mcJson.Palette.value;
+        json.blocks = mcJson.BlockData.value;
+    }
+    mcJson = json;
 
     const decodedBlocks = [];
     let decodeI = 0;
