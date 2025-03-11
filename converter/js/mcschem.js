@@ -4,7 +4,7 @@ export const parseMcschem = async function (buffer) {
         noArraySizeCheck: true
     }).then(schem => {
         schem = schem.data.value;
-        return schem.Schematic.value || schem;
+        return schem.Schematic?.value || schem;
     });
 
     return parsed;
