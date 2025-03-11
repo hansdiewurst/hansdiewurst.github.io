@@ -131,7 +131,7 @@ export const mcJSONToBloxd = function (mcJson, name = "New Schematic") {
     //Convert palette
     const paletteArr = [];
     for(const mcId in mcJson.palette) {
-        const idx = mcJson.palette[mcId].value;
+        const idx = mcJson.palette[mcId];
         paletteArr[idx] = mcToBloxdId(mcId);
     }
 
