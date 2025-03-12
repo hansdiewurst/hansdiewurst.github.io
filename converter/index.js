@@ -42,7 +42,7 @@ input.addEventListener("input", () => {
             break;
         case "schem": handler = minecraftToBloxd;
             break;
-        case "schematic": error(".schematic files aren't supported.\nYou may use https://beta.cubical.xyz/ or https://puregero.github.io/SchemToSchematic/ to convert to .schem.")
+        case "schematic": error(".schematic files aren't supported.\nYou may use https://beta.cubical.xyz/ or similar pages to convert to .schem.");
         default: error("File type not recognized. Only valid are .schem and .bloxdschem");
     }
 
