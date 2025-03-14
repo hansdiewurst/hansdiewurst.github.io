@@ -94,7 +94,7 @@ export const mcJSONToBloxd = function (mcJson, name = "New Schematic") {
     function idxToPos(idx, size) {
         const x = idx % size[0];
         const y = Math.floor(idx / (size[0] * size[2]));
-        const z = Math.floor(idx / size[0]) % size[2];
+        const z = (size[2] - 1 - Math.floor(idx / size[0]) % size[2]);
 
         return [x, y, z];
     }
