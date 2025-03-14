@@ -268,16 +268,16 @@ export const mcToBloxdId = function(mcId) {
     }
 
     const sides = {
-        north: 3,
+        north: 1,
         east: 2,
-        south: 1,
+        south: 3,
         west: 4,
-        up: 1
+        up: 3
     };
     const invertedSides = {
-        north: 1,
+        north: 3,
         east: 4,
-        south: 3,
+        south: 1,
         west: 2,
         up: 1
     };
