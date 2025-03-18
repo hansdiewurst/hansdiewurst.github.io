@@ -5,7 +5,7 @@ function posToIdxBloxd(pos, size) {
     return pos[0] * size[1] * size[2] + pos[1] * size[2] + pos[2];
 }
 function posToIdxMc(pos, size) {
-    return pos[1]*size[0]*size[2] + pos[2]*size[0] + pos[0];
+    return (pos[1] * size[2] + pos[2]) * size[0] + pos[0];
 }
 
 export const bloxdJSONtoMc = function(bloxdJson) {
@@ -106,33 +106,16 @@ export const mcJSONToBloxd = function (mcJson, name = "New Schematic") {
         chunks: []
     };
 
-    const decodedBlocks = [];
-    let decodeI = 0;
-    function decodeLEB128() {
-        let shift = 0;
-        let value = 0;
-    
-        while(true) {
-            const byte = mcJson.blocks[decodeI++];
-            value |= (byte & 127) << shift;
-            shift += 7
-            if((byte & 128) !== 128) {
-                break;
-            }
-        }
-        return value;
-    }
-
-    while(decodeI < mcJson.blocks.length) {
-        decodedBlocks.push(decodeLEB128());
-    }
-    mcJson.blocks = decodedBlocks;
-
     //Convert palette
-    const paletteArr = [];
-    for(const mcId in mcJson.palette) {
-        const idx = mcJson.palette[mcId];
-        paletteArr[idx] = mcToBloxdId(mcId);
+    if(Array.isArray(mcJson.palette)) {
+        mcJson.palette = mcJson.palette.map(mcToBloxdId);
+    } else {
+        const paletteArr = [];
+        for(const mcId in mcJson.palette) {
+            const idx = mcJson.palette[mcId];
+            paletteArr[idx] = mcToBloxdId(mcId);
+        }
+        mcJson.palette = paletteArr
     }
 
     const { size } = mcJson;
@@ -167,7 +150,7 @@ export const mcJSONToBloxd = function (mcJson, name = "New Schematic") {
 
         const maxI = blockI % size[0] + 32 > size[0] ? size[0] % 32 : 32;
         for(let i = 0; i < maxI; i++) {
-            chunk.blocks[chunkLocalI + i * 1024] = paletteArr[mcJson.blocks[blockI++]];
+            chunk.blocks[chunkLocalI + i * 1024] = mcJson.palette[mcJson.blocks[blockI++]];
         }
     }
 

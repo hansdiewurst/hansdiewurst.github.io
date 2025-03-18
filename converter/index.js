@@ -1,5 +1,5 @@
-import { parseBloxdschem, writeBloxdschem } from "./js/bloxdschem.js";
-import { parseMcschem, writeMcschem } from "./js/mcschem.js";
+import { parseBloxdschem, writeBloxdschem } from "./js/bloxd.js";
+import { parseSchem, parseLitematic, writeMinecraft } from "./js/minecraft.js";
 import { mcJSONToBloxd, bloxdJSONtoMc } from "./js/json.js";
 
 const downloadBin = function (data, name) {
@@ -31,8 +31,8 @@ input.type = "file";
 input.addEventListener("input", () => {
     const file = input.files[0];
     const split = file.name.split(".");
-    const name = split.shift();
-    const type = split.join(".");
+    const name = split[0];
+    const type = split[split.length - 1];
 
     const fileReader = new FileReader();
 
@@ -40,7 +40,9 @@ input.addEventListener("input", () => {
     switch(type) {
         case "bloxdschem": handler = bloxdToMinecraft;
             break;
-        case "schem": handler = minecraftToBloxd;
+        case "schem": handler = schemToBloxd;
+            break;
+        case "litematic": handler = litematicToBloxd;
             break;
         case "schematic": error(".schematic files aren't supported.\nYou may use https://beta.cubical.xyz/ or similar pages to convert to .schem.");
         default: error("File type not recognized. Only valid are .schem and .bloxdschem");
@@ -59,16 +61,27 @@ const bloxdToMinecraft = function (buffer, name) {
 
     const parsed = parseBloxdschem(buffer);
     const mcJson = bloxdJSONtoMc(parsed);
-    const mcSchem = writeMcschem(mcJson);
+    const mcSchem = writeMinecraft(mcJson);
     console.log(`Conversion time: ${Date.now() - startTime}`);
 
     downloadBin(mcSchem, `${name}.schem`);
 };
 
-const minecraftToBloxd = async function (buffer, name) {
+const schemToBloxd = async function (buffer, name) {
     const startTime = Date.now();
 
-    const parsed = await parseMcschem(buffer);
+    const parsed = await parseSchem(buffer);
+    const bloxdJson = mcJSONToBloxd(parsed, name);
+    const bloxdSchem = writeBloxdschem(bloxdJson);
+    console.log(`Conversion time: ${Date.now() - startTime}`);
+
+    downloadBin(bloxdSchem, `${name}.bloxdschem`);
+};
+
+const litematicToBloxd = async function (buffer, name) {
+    const startTime = Date.now();
+
+    const parsed = await parseLitematic(buffer);
     const bloxdJson = mcJSONToBloxd(parsed, name);
     const bloxdSchem = writeBloxdschem(bloxdJson);
     console.log(`Conversion time: ${Date.now() - startTime}`);
