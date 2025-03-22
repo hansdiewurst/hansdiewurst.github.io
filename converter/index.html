@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <link rel="stylesheet" href="./index.css">
         <!--bowserified from https://github.com/mtth/avsc and https://github.com/PrismarineJS/prismarine-nbt/ -->
         <script src="./avsc.js"></script>
         <script src="./pnbt.js"></script>
@@ -13,6 +14,12 @@
         <script src="./index.js" type="module"></script>
     </head>
     <body>
-        Credit: Significant parts of <a href="./js/block-jsons.js">block-jsons.js</a> are taken from <a href="https://bloxd.io/">bloxd</a><br>
+        <div class="text-cont">
+            <h2>Convert schematic files from minecraft to bloxd and vice versa.</h1>
+            <div><b>Credit:</b> Significant parts of <a href="./js/block-jsons.js">block-jsons.js</a> are taken from <a href="https://bloxd.io/">bloxd</a>.</div>
+            <div><b>Supported types:</b> .bloxdschem, .schematic, .schem, .litematic</div>
+            <div>It is recommended to use <a href="https://beta.cubical.xyz">beta cubical</a> to convert .schematic files to .schem (File -> Export File -> Sponge Schematic) for more accurate conversion.</div>
+            <div>Blocks with no equivalent are being replaced with dirt.</div>
+        </div>
     </body>
 </html>

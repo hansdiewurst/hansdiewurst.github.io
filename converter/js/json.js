@@ -107,15 +107,14 @@ export const mcJSONToBloxd = function (mcJson, name = "New Schematic") {
     };
 
     //Convert palette
+    //in case of litematic
     if(Array.isArray(mcJson.palette)) {
         mcJson.palette = mcJson.palette.map(mcToBloxdId);
     } else {
-        const paletteArr = [];
-        for(const mcId in mcJson.palette) {
-            const idx = mcJson.palette[mcId];
-            paletteArr[idx] = mcToBloxdId(mcId);
+        for(const idx in mcJson.palette) {
+            const mcId = mcJson.palette[idx];
+            mcJson.palette[idx] = mcToBloxdId(mcId);
         }
-        mcJson.palette = paletteArr
     }
 
     const { size } = mcJson;

@@ -1,5 +1,5 @@
 import { parseBloxdschem, writeBloxdschem } from "./js/bloxd.js";
-import { parseSchem, parseLitematic, writeMinecraft } from "./js/minecraft.js";
+import { parseSchem, parseLitematic, parseSchematic, writeMinecraft } from "./js/minecraft.js";
 import { mcJSONToBloxd, bloxdJSONtoMc } from "./js/json.js";
 
 const downloadBin = function (data, name) {
@@ -44,7 +44,8 @@ input.addEventListener("input", () => {
             break;
         case "litematic": handler = litematicToBloxd;
             break;
-        case "schematic": error(".schematic files aren't supported.\nYou may use https://beta.cubical.xyz/ or similar pages to convert to .schem.");
+        case "schematic": handler = schematicToBloxd;
+            break;//error(".schematic files aren't supported.\nYou may use https://beta.cubical.xyz/ or similar pages to convert to .schem.");
         default: error("File type not recognized. Only valid are .schem and .bloxdschem");
     }
 
@@ -82,6 +83,17 @@ const litematicToBloxd = async function (buffer, name) {
     const startTime = Date.now();
 
     const parsed = await parseLitematic(buffer);
+    const bloxdJson = mcJSONToBloxd(parsed, name);
+    const bloxdSchem = writeBloxdschem(bloxdJson);
+    console.log(`Conversion time: ${Date.now() - startTime}`);
+
+    downloadBin(bloxdSchem, `${name}.bloxdschem`);
+};
+
+const schematicToBloxd = async function (buffer, name) {
+    const startTime = Date.now();
+
+    const parsed = await parseSchematic(buffer);
     const bloxdJson = mcJSONToBloxd(parsed, name);
     const bloxdSchem = writeBloxdschem(bloxdJson);
     console.log(`Conversion time: ${Date.now() - startTime}`);

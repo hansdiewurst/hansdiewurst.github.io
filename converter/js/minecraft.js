@@ -1,4 +1,5 @@
 //Read and write .schem files using prismarine nbt
+import { mcNumToStr }  from "./block-conversion.js";
 const parse = buffer => {
     return pnbt.parseAs(buffer, "big", {
         noArraySizeCheck: true
@@ -48,6 +49,13 @@ export const parseSchem = async function (buffer) {
     }
     json.blocks = decodedBlocks;
 
+    //Flip palette
+    const flippedPalette = {};
+    for(const block in json.palette) {
+        const idx = json.palette[block];
+        flippedPalette[idx] = block;
+    }
+    json.palette = flippedPalette;
     return json;
 };
 
@@ -145,6 +153,42 @@ export const parseLitematic = async function (buffer) {
     return json;
 }
 
+export const parseSchematic = async function (buffer) {
+    const schem = await parse(buffer);
+    //Some .schematics use the exact same format as .schem, idk why
+    if(schem.BlockData) return await parseSchem(buffer);
+
+    const json = {
+        size: [
+            schem.Width,
+            schem.Height,
+            schem.Length
+        ],
+        palette: {
+            //air quickcase
+            0: "minecraft:air"
+        }
+    };
+
+    for(let i = 0; i < schem.Blocks.length; i++) {
+        let id = schem.Blocks[i];
+        const data = schem.Data[i];
+
+        if(!id) continue;
+        if(id < 0) {
+            id = schem.Blocks[i] += 256;
+        }
+
+        const str = mcNumToStr(id, data);
+        const key = `${id}:${data}`;
+
+        json.palette[key] ??= str;
+        schem.Blocks[i] = key;
+    }
+    json.blocks = schem.Blocks;
+
+    return json;
+}
 export const writeMinecraft = function (json) {
     return pnbt.writeUncompressed(json);
 };

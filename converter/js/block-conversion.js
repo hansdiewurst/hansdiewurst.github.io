@@ -1,7 +1,7 @@
 //Convert minecraft block-ids to bloxd block-ids and vice versa
 //I apologise for below code in advance, most of it was made months ago for a seperate project.
 
-import { b2mJson, m2bJson, idToNameJson, nameToIdJson, stairReplacements } from "./block-jsons.js";
+import { b2mJson, m2bJson, idToNameJson, nameToIdJson, stairReplacements, mcNumToStrJson } from "./block-jsons.js";
 
 function getType(mcId) {
     const typeKeywords = {
@@ -323,3 +323,175 @@ export const mcToBloxdId = function(mcId) {
     //Dirt as fallback, might not be necessary
     return nameToIdJson[baseName + metaStr] ?? nameToIdJson[baseName] ?? 2;
 }
+
+export const mcNumToStr = function(block, data) {
+    let name = mcNumToStrJson[`${block}:${data}`] || mcNumToStrJson[block] || "minecraft:dirt";
+
+    //Names without the "minecraft:"-prefix are to be replaced with metadata blocks
+    if(name.startsWith("minecraft:")) {
+        return name;
+    }
+
+    //metadata
+    const facings = [
+        "south",
+        "west",
+        "north",
+        "east"
+    ];
+    const facings2 = [
+        "north",
+        "south",
+        "west",
+        "east"
+    ];
+    const woodPrefixes = [
+        "oak",
+        "spruce",
+        "birch",
+        "jungle",
+        "acacia",
+        "dark_oak"
+    ];
+
+    //Not very elegant, but at least quite clearly structured
+    if(name === "farmland") {
+        name += `[age=${data}]`;
+    } else if(
+        name === "anvil" ||
+        name.endsWith("_glazed_terracotta") ||
+        name === "pumpkin" ||
+        name === "jack_o_lantern"
+    ) {
+        name += `[facing=${facings[data % 4]}]`;
+    } else if(
+        name === "command_block" ||
+        name === "observer" ||
+        name === "ladder" ||
+        name.endsWith("furnace") ||
+        name.endsWith("chest")
+    ) {
+        data %= 8;
+        if(data >= 2 && data <= 5) {
+            name += `[facing=${facings2[data - 2]}]`;
+        }
+    } else if(name === "bed") {
+        const part = data >= 8 ? "head" : "foot";
+        name = `red_bed[facing=${facings[data % 8]},part=${part}]`;
+    } else if(name === "oak_trapdoor" || name === "iron_trapdoor") {
+        data %= 8;
+        const isOpen = data >= 4;
+        name += `[facing=${facings[data % 4]},open=${isOpen}]`;
+    } else if(
+        name === "wool" ||
+        name === "stained_glass" ||
+        name === "stained_glass_pane" ||
+        name === "terracotta" ||
+        name === "carpet" ||
+        name === "concrete" ||
+        name === "concrete powder"
+    ) {
+        const colors = [
+            "white",
+            "orange",
+            "magenta",
+            "light_blue",
+            "yellow",
+            "lime",
+            "pink",
+            "gray",
+            "light_gray",
+            "cyan",
+            "purple",
+            "blue",
+            "brown",
+            "green",
+            "red",
+            "black"
+        ];
+        name = `${colors[data]}_${name}`;
+    } else if(name === "double_plant") {
+        //TODO: Halfs, docs are unclear and cubical doesn't support it at all
+        if(data <= 5) {
+            const plantTypes = [
+                "sunflower",
+                "lilac",
+                "tall_grass",
+                "large_fern",
+                "rose_bush",
+                "peony"
+            ];
+            name = plantTypes[data];
+        }
+    } else if(name === "planks" || name === "sapling") {
+        name = `${woodPrefixes[data % 8]}_${name}`;
+    } else if(name === "wooden_slab" || name === "double_wooden_slab") {
+        const type = name.startsWith("double_") ? "double" : data >= 8 ? "top" : "bottom";
+        name = `${woodPrefixes[data % 8]}_slab[type=${type}]`;
+    } else if(name === "stone_slab" || name === "double_stone_slab") {
+        data %= 8;
+        const stoneSlabPrefixes = [
+            "stone",
+            "sandstone",
+            "petrified_oak",
+            "cobblestone",
+            "brick",
+            "stone_brick",
+            "nether_brick",
+            "quartz",
+            "red_sandstone"
+        ];
+        if(name.endsWith("2")) {
+            data += 8;
+            name = name.substring(0, name.length - 1);
+        }
+        const type = name.startsWith("double_") ? "double" : data >= 8 ? "top" : "bottom";
+        name = `${stoneSlabPrefixes[data]}_slab[type=${type}]`;
+    } else if(name === "purpur_slab") {
+        const type = data === 8 ? "top" : "bottom";
+        name `purpur_slab[type=${type}]`;
+    } else if(name.startsWith("leaves") || name.startsWith("log")) {
+        data %= 4;
+        if(name.endsWith("2")) {
+            data += 4;
+            name = name.substring(0, name.length - 1);
+        }
+        name = `${woodPrefixes[data]}_${name}`;
+    } else if(name === "vines") {
+        //TODO
+    } else if(name.endsWith("_mushroom_block")) {
+        //TODO
+    } else if(name.endsWith("sandstone")) {
+        const sandstonePrefixes = [
+            "",
+            "chiseled",
+            "smooth"
+        ];
+        name = sandstonePrefixes[data] + name;
+    } else if(name.endsWith("_door")) {
+        const half = data >= 8 ? "upper" : "lower";
+        name += `[half=${half}]`;
+    }
+
+    return `minecraft:${name || "dirt"}`;
+
+    /*
+            SAPLINGS % 8
+            LOGS % 4
+            LEAVES % 4
+            
+        */
+        /*const baseStr = mcNumToStr[id];
+    
+        const blockData = schem.Data[i];
+        let dataStr;
+        if(blockData) {
+            const dataId = `${id}:${blockData}`;
+            let dataStr = mcNumToStr[dataId];
+            if(!dataStr) {
+                
+            }
+        } else {
+            str = mcNumToStr[id];
+        }*/
+};
