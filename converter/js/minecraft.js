@@ -102,9 +102,17 @@ export const parseLitematic = async function (buffer) {
 
     for (const region of Object.values(schem.Regions)) {
         //region metrics
-        const size = Object.values(region.Size);
+        const size = [
+            region.Size.x,
+            region.Size.y,
+            region.Size.z
+        ];
         const absSize = size.map(Math.abs);
-        const pos = Object.values(region.Position).map((coord, i) => {
+        const pos = [
+            region.Position.x,
+            region.Position.y,
+            region.Position.z
+        ].map((coord, i) => {
             //set to lowest coordinate
             if(size[i] < 0) return coord % (size[i] + 1);
             return coord;
