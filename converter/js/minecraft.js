@@ -93,7 +93,12 @@ export const parseLitematic = async function (buffer) {
     }
 
     const schem = await parse(buffer);
-    const size = Object.values(schem.Metadata.EnclosingSize);
+    let size = schem.Metadata.EnclosingSize;
+    size = [
+        size.x,
+        size.y,
+        size.z
+    ];
     const json = {
         blocks: new Array(size.reduce((acc, val) => acc * val)),
         palette: [],
