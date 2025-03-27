@@ -368,7 +368,7 @@ export const mcNumToStr = function(block, data) {
         name === "command_block" ||
         name === "observer" ||
         name === "ladder" ||
-        name.endsWith("furnace") ||
+        name === "furnace" ||
         name.endsWith("chest")
     ) {
         data %= 8;
@@ -467,7 +467,7 @@ export const mcNumToStr = function(block, data) {
             "chiseled",
             "smooth"
         ];
-        name = sandstonePrefixes[data] + name;
+        name = `${sandstonePrefixes[data]}_${name}`.replace(/(?<=^)_/, "");
     } else if(name.endsWith("_door")) {
         const half = data >= 8 ? "upper" : "lower";
         name += `[half=${half}]`;
